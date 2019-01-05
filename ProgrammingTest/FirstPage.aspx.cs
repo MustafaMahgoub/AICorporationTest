@@ -28,14 +28,21 @@ public partial class FirstPage : System.Web.UI.Page
         m_szForthVariable = PopulateVariable(ForthVariableLabel, ModifiedForthVariable, rRandom);
         m_szFifthVariable = PopulateVariable(FifthVariableLabel, ModifiedFifthVariable, rRandom);
         m_szSixthVariable = PopulateVariable(SixthVariableLabel, ModifiedSixthVariable, rRandom);
-        m_szSeventhVariable =PopulateVariable(SeventhVariableLabel, ModifiedSeventhVariable, rRandom);
+        m_szSeventhVariable = PopulateVariable(SeventhVariableLabel, ModifiedSeventhVariable, rRandom);
         m_szEighthVariable = PopulateVariable(EighthVariableLabel, ModifiedEighthVariable, rRandom);
-        
-        var data = m_szFirstVariable + m_szSecondVariable + m_szThirdVariable + m_szForthVariable + m_szFifthVariable + m_szSixthVariable + m_szSeventhVariable + m_szEighthVariable;
-        Utils.EnryptMessage(data);
+
+        //--------------------------------------------+
+        // Level 3 security - USING DES ENCRYPTION    |
+        //--------------------------------------------+
+        var data = Utils.BuildString(m_szFirstVariable, m_szSecondVariable, m_szThirdVariable, m_szForthVariable, m_szFifthVariable, m_szSixthVariable, m_szSeventhVariable, m_szEighthVariable);
+        var desKey = Utils.GetDesKey();
+        var desIv = Utils.GetDesIv();
+        var encryptedData = DESEncryption.Enrypt(Encoding.UTF8.GetBytes(data), desKey, desIv);
+
         var hmacKey = Utils.GetHMACKey();
-        byte[] hashedValue = Utils.ComputeHmacSha256(Encoding.UTF8.GetBytes(data), hmacKey);
-        hdHash.Value = Convert.ToBase64String(hashedValue);
+        byte[] hashedValue = HashGenerator.ComputeHmacSha256(encryptedData, hmacKey);
+
+        hdHash.Value = Convert.ToBase64String(hashedValue);        
     }
 
     private string PopulateVariable(Label lLabel, TextBox tbModiferTextBox, Random rRandom)

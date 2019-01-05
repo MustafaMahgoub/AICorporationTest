@@ -40,21 +40,35 @@ public partial class SecondPage : System.Web.UI.Page
     }
 
     private bool ValidateIncomingVariables(HttpRequest request)
-    {       
-        var data =
-            Request.Form["ModifiedFirstVariable"] +
-            Request.Form["ModifiedSecondVariable"] +
-            Request.Form["ModifiedThirdVariable"] +
-            Request.Form["ModifiedForthVariable"] +
-            Request.Form["ModifiedFifthVariable"] +
-            Request.Form["ModifiedSixthVariable"] +
-            Request.Form["ModifiedSeventhVariable"] +
-            Request.Form["ModifiedEighthVariable"];        
+    {  
+        // Building the string from the incoming request
+        var data = Utils.BuildString(
+            Request.Form["ModifiedFirstVariable"], 
+            Request.Form["ModifiedSecondVariable"], 
+            Request.Form["ModifiedThirdVariable"], 
+            Request.Form["ModifiedForthVariable"], 
+            Request.Form["ModifiedFifthVariable"], 
+            Request.Form["ModifiedSixthVariable"], 
+            Request.Form["ModifiedSeventhVariable"], 
+            Request.Form["ModifiedEighthVariable"]);
 
+        // Fetch the hash from the incoming request
         var originalHash = Request.Form["hdHash"];
+
+        // Get DES seceret key and Intitial Victor
+        var desKey = Utils.GetDesKey();
+        var desIv = Utils.GetDesIv();
+
+        //Encrypt the data recieved from the incoming request 
+        var encryptedData =DESEncryption.Enrypt(Encoding.UTF8.GetBytes(data), desKey, desIv);
+
+        // Hash the encrypted data
         var hmacKey = Utils.GetHMACKey();
-        var calculatedHash = Convert.ToBase64String(Utils.ComputeHmacSha256(Encoding.UTF8.GetBytes(data), hmacKey));
-        Utils.DecryptMessage(data);
+
+        // Calculate the hash for the encrypted data
+        var calculatedHash = Convert.ToBase64String(HashGenerator.ComputeHmacSha256(encryptedData, hmacKey));        
+
+        // Finally compare the hash values
         return originalHash == calculatedHash;        
     }
 }

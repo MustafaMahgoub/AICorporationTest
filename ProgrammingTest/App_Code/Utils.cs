@@ -1,35 +1,53 @@
 ﻿using System.Security.Cryptography;
 using System.Configuration;
 using System.Text;
+using System;
 
 public static class Utils
 {
     public static byte[] GetHMACKey()
     {
-
         // The key must be shared between the client and the server.
         // The key will be givin the client on some secure way.
         // The key must be stored in secure location.
         // The key will never be sent on the request on the response.
         return Encoding.UTF8.GetBytes(ConfigurationManager.AppSettings["HMACKey"].ToString());
     }
-    public static byte[] ComputeHmacSha256(byte[] toBeHashed, byte[] key)
+    public static byte[] GetDesKey()
     {
-
-        using (var hmac = new HMACSHA256(key))
-        {
-            return hmac.ComputeHash(toBeHashed);
-        }
+        // The key must be shared between the client and the server.
+        // The key will be givin the client on some secure way.
+        // The key must be stored in secure location.
+        // The key will never be sent on the request on the response.
+        return Convert.FromBase64String(ConfigurationManager.AppSettings["DESKey"].ToString());
     }
-    public static string EnryptMessage(string msg)
+    public static byte[] GetDesIv()
     {
-        // TODO
-        return msg;
+        // The key must be shared between the client and the server.
+        // The key will be givin the client on some secure way.
+        // The key must be stored in secure location.
+        // The key will never be sent on the request on the response.
+        return Convert.FromBase64String(ConfigurationManager.AppSettings["DESIv"].ToString());
     }
-    public static string DecryptMessage(string msg)
+    public static string BuildString(
+                        string m_szFirstVariable,
+                        string m_szSecondVariable,
+                        string m_szThirdVariable,
+                        string m_szForthVariable,
+                        string m_szFifthVariable,
+                        string m_szSixthVariable,
+                        string m_szSeventhVariable,
+                        string m_szEighthVariable)
     {
-
-        // TODO
-        return msg;
+        StringBuilder builder = new StringBuilder();
+        builder.Append(m_szFirstVariable);
+        builder.Append(m_szSecondVariable);
+        builder.Append(m_szThirdVariable);
+        builder.Append(m_szForthVariable);
+        builder.Append(m_szFifthVariable);
+        builder.Append(m_szSixthVariable);
+        builder.Append(m_szSeventhVariable);
+        builder.Append(m_szEighthVariable);
+        return builder.ToString();
     }
 }
