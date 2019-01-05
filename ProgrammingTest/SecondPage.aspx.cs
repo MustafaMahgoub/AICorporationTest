@@ -55,12 +55,12 @@ public partial class SecondPage : System.Web.UI.Page
         // Fetch the hash from the incoming request
         var originalHash = Request.Form["hdHash"];
 
-        // Get Triple DES seceret key and Intitial Victor
-        var tripleDesKey = Utils.GetTripleDesKey();
-        var tripleDesIv = Utils.GetTripleDesIv();
+        // Get AES seceret key and Intitial Victor
+        var aesKey = Utils.GetAesKey();
+        var aesIv = Utils.GetAesIv();
 
         //Encrypt the data recieved from the incoming request 
-        var encryptedData =TripleDESEncryption.Enrypt(Encoding.UTF8.GetBytes(data), tripleDesKey, tripleDesIv);
+        var encryptedData =AESEncryption.Enrypt(Encoding.UTF8.GetBytes(data), aesKey, aesIv);
 
         // Get the HMAC key to hash the encrypted data
         var hmacKey = Utils.GetHMACKey();

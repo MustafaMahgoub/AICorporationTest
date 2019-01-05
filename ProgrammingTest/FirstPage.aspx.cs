@@ -31,20 +31,20 @@ public partial class FirstPage : System.Web.UI.Page
         m_szSeventhVariable = PopulateVariable(SeventhVariableLabel, ModifiedSeventhVariable, rRandom);
         m_szEighthVariable = PopulateVariable(EighthVariableLabel, ModifiedEighthVariable, rRandom);
 
-        //---------------------------------------------------------+
-        // Level 4 security - USING TRIPLE DES ENCRYPTION (3 Keys) |
-        //---------------------------------------------------------+
+        //-----------------------------------------+
+        // Level 2 security - USING AES Encryption |
+        //-----------------------------------------+
 
         //-----------------------------------------------------------+
         // USED ONCE TO GENERATE THE KEYS AND STORE IT IN THE CONFIG |
-            //var keyString= Convert.ToBase64String(KeyGenerator.GenerateKey(24));
-            //var ivString = Convert.ToBase64String(KeyGenerator.GenerateKey(8));
+            //var keyString= Convert.ToBase64String(KeyGenerator.GenerateKey());
+            //var ivString = Convert.ToBase64String(KeyGenerator.GenerateKey(16));
         //-----------------------------------------------------------+
 
         var data = Utils.BuildString(m_szFirstVariable, m_szSecondVariable, m_szThirdVariable, m_szForthVariable, m_szFifthVariable, m_szSixthVariable, m_szSeventhVariable, m_szEighthVariable);
-        var desKey = Utils.GetTripleDesKey();
-        var desIv = Utils.GetTripleDesIv();
-        var encryptedData = TripleDESEncryption.Enrypt(Encoding.UTF8.GetBytes(data), desKey, desIv);
+        var aesKey = Utils.GetAesKey();
+        var aesIv = Utils.GetAesIv();
+        var encryptedData = AESEncryption.Enrypt(Encoding.UTF8.GetBytes(data), aesKey, aesIv);
 
         var hmacKey = Utils.GetHMACKey();
         byte[] hashedValue = HashGenerator.ComputeHmacSha256(encryptedData, hmacKey);
