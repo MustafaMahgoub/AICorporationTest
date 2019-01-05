@@ -30,20 +30,12 @@ public partial class FirstPage : System.Web.UI.Page
         m_szSixthVariable = PopulateVariable(SixthVariableLabel, ModifiedSixthVariable, rRandom);
         m_szSeventhVariable =PopulateVariable(SeventhVariableLabel, ModifiedSeventhVariable, rRandom);
         m_szEighthVariable = PopulateVariable(EighthVariableLabel, ModifiedEighthVariable, rRandom);
-
-
-        //var data = m_szFirstVariable + m_szSecondVariable + m_szThirdVariable + m_szForthVariable + m_szFifthVariable + m_szSixthVariable + m_szSeventhVariable + m_szEighthVariable;
-        //hdHash.Value = HashGenerator.GenerateMd5Hash(data);
-
-        // Called Once
-        //var key = Convert.ToBase64String(HMACKeyGenerator.GenerateKey());
         
         var data = m_szFirstVariable + m_szSecondVariable + m_szThirdVariable + m_szForthVariable + m_szFifthVariable + m_szSixthVariable + m_szSeventhVariable + m_szEighthVariable;
         Utils.EnryptMessage(data);
         var hmacKey = Utils.GetHMACKey();
         byte[] hashedValue = Utils.ComputeHmacSha256(Encoding.UTF8.GetBytes(data), hmacKey);
         hdHash.Value = Convert.ToBase64String(hashedValue);
-
     }
 
     private string PopulateVariable(Label lLabel, TextBox tbModiferTextBox, Random rRandom)

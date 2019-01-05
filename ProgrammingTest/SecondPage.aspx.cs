@@ -49,18 +49,12 @@ public partial class SecondPage : System.Web.UI.Page
             Request.Form["ModifiedFifthVariable"] +
             Request.Form["ModifiedSixthVariable"] +
             Request.Form["ModifiedSeventhVariable"] +
-            Request.Form["ModifiedEighthVariable"];
-        
+            Request.Form["ModifiedEighthVariable"];        
 
         var originalHash = Request.Form["hdHash"];
         var hmacKey = Utils.GetHMACKey();
         var calculatedHash = Convert.ToBase64String(Utils.ComputeHmacSha256(Encoding.UTF8.GetBytes(data), hmacKey));
-
         Utils.DecryptMessage(data);
-        return originalHash == calculatedHash;
-
-        //var calculatedHash = HashGenerator.GenerateMd5Hash(data);
-        //return originalHash == calculatedHash;
-
+        return originalHash == calculatedHash;        
     }
 }
