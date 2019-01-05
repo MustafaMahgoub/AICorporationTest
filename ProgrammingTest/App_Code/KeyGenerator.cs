@@ -4,7 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Web;
 
-public static class HMACKeyGenerator
+public static class KeyGenerator
 {
     private const int KeySize = 32;
 

@@ -1,11 +1,12 @@
 ﻿using System.IO;
 using System.Security.Cryptography;
 
-public static class DESEncryption
+public class TripleDESEncryption
 {
+
     public static byte[] Enrypt(byte[] dataToEncrypt, byte[] key, byte[] iv)
     {
-        using (var des = new DESCryptoServiceProvider())
+        using (var des = new TripleDESCryptoServiceProvider())
         {
             des.Mode = CipherMode.CBC;
             des.Padding = PaddingMode.PKCS7;
@@ -26,7 +27,7 @@ public static class DESEncryption
     // Decrypt can then be used to decrypt data in further scenarios
     public static byte[] Decrypt(byte[] dataToDecrypt, byte[] key, byte[] iv)
     {
-        using (var des = new DESCryptoServiceProvider())
+        using (var des = new TripleDESCryptoServiceProvider())
         {
             des.Mode = CipherMode.CBC;
             des.Padding = PaddingMode.PKCS7;

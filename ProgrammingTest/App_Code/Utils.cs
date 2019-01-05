@@ -19,7 +19,7 @@ public static class Utils
         // The key will be givin the client on some secure way.
         // The key must be stored in secure location.
         // The key will never be sent on the request on the response.
-        return Convert.FromBase64String(ConfigurationManager.AppSettings["DESKey"].ToString());
+        return Convert.FromBase64String(ConfigurationManager.AppSettings["DesKey"].ToString());
     }
     public static byte[] GetDesIv()
     {
@@ -27,8 +27,25 @@ public static class Utils
         // The key will be givin the client on some secure way.
         // The key must be stored in secure location.
         // The key will never be sent on the request on the response.
-        return Convert.FromBase64String(ConfigurationManager.AppSettings["DESIv"].ToString());
+        return Convert.FromBase64String(ConfigurationManager.AppSettings["DesIv"].ToString());
     }
+    public static byte[] GetTripleDesKey()
+    {
+        // The key must be shared between the client and the server.
+        // The key will be givin the client on some secure way.
+        // The key must be stored in secure location.
+        // The key will never be sent on the request on the response.
+        return Convert.FromBase64String(ConfigurationManager.AppSettings["TripleDesKey"].ToString());
+    }
+    public static byte[] GetTripleDesIv()
+    {
+        // The key must be shared between the client and the server.
+        // The key will be givin the client on some secure way.
+        // The key must be stored in secure location.
+        // The key will never be sent on the request on the response.
+        return Convert.FromBase64String(ConfigurationManager.AppSettings["TripleDesIv"].ToString());
+    }
+
     public static string BuildString(
                         string m_szFirstVariable,
                         string m_szSecondVariable,
