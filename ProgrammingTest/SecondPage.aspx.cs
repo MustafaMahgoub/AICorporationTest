@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Text;
 
 public partial class SecondPage : System.Web.UI.Page
 {
@@ -50,9 +51,16 @@ public partial class SecondPage : System.Web.UI.Page
             Request.Form["ModifiedSeventhVariable"] +
             Request.Form["ModifiedEighthVariable"];
         
+
         var originalHash = Request.Form["hdHash"];
-        var calculatedHash = HashGenerator.GenerateMd5Hash(data);
+        var hmacKey = Utils.GetHMACKey();
+        var calculatedHash = Convert.ToBase64String(Utils.ComputeHmacSha256(Encoding.UTF8.GetBytes(data), hmacKey));
+
+        Utils.DecryptMessage(data);
         return originalHash == calculatedHash;
-        //throw new NotImplementedException("YOU MUST COMPLETE THE TASK");
+
+        //var calculatedHash = HashGenerator.GenerateMd5Hash(data);
+        //return originalHash == calculatedHash;
+
     }
 }
