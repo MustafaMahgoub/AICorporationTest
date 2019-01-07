@@ -37,37 +37,27 @@ public partial class SecondPage : System.Web.UI.Page
             pnMessageBox.CssClass = "WarningMessage";
             lbMessage.Text = exc.Message;
         }
-    }
-
-    private bool Compare(byte[] array1, byte[] array2)
-    {
-
-        var result = array1.Length == array2.Length;
-
-        for (int i = 0; i < array1.Length && i < array2.Length; ++i)
-        {
-            result &= array1[i] == array2[i];
-        }
-        return result;
-    }
+    }    
     private bool ValidateIncomingVariables(HttpRequest request)
     {
-        // Step 1 -Read the follwoing from the hidden values
-            //1 -Encrypted Session Key
-            //2- Encrypted Data 
-            //3- IV 
-            //4- Encrypted Data`s Hash
-        var encryptedSessionKeyBytes = Convert.FromBase64String(Request.Form["hdEncryptedSessionKey"]);
-        var encryptedDataBytes = Convert.FromBase64String(Request.Form["hdEncryptedData"]);
-        var ivBytes = Convert.FromBase64String(Request.Form["hdIv"]);
-        var hashedDataBytes = Convert.FromBase64String(Request.Form["hdHashedData"]);
+        bool isGenuine = false;
 
-        // Step 2 -Decrypt the session key using the receiver's private key.        
+        // Step 1 -Read the follwoing from the hidden values
+            //1 -Request Encrypted Session Key
+            //2- Request Encrypted Data 
+            //3- Request IV 
+            //4- Request Encrypted Data`s Hash
+        var requestEncryptedSessionKeyBytes = Convert.FromBase64String(Request.Form["hdEncryptedSessionKey"]);
+        var requestEncryptedDataBytes = Convert.FromBase64String(Request.Form["hdEncryptedData"]);
+        var requestIvBytes = Convert.FromBase64String(Request.Form["hdIv"]);
+        var requestHashedDataBytes = Convert.FromBase64String(Request.Form["hdHashedData"]);
+
+        // Step 2 -Decrypt the request session key using the receiver's private key.        
         var rsa = new RSAEncryption();
-        var decryptedSessionKey = rsa.Decrypt(Server.MapPath("~/Keys/privatekey.xml"), encryptedSessionKeyBytes);        
+        var requestDecryptedSessionKey = rsa.Decrypt(Server.MapPath("~/Keys/privatekey.xml"), requestEncryptedSessionKeyBytes);        
         
-        // Step 3-Building the string from the incoming request 
-        var actualRequestData = Utils.BuildString(
+        // Step 3-Building the string from the incoming request's actual data
+        var actualData = Utils.BuildString(
             Request.Form["ModifiedFirstVariable"],
             Request.Form["ModifiedSecondVariable"],
             Request.Form["ModifiedThirdVariable"],
@@ -77,20 +67,35 @@ public partial class SecondPage : System.Web.UI.Page
             Request.Form["ModifiedSeventhVariable"],
             Request.Form["ModifiedEighthVariable"]);
 
-        // Step 4-Encrypt the incoming actual request`s data using the same decrypted session key and the iv.
+        // Step 4-Encrypt the incoming request's actual data using the decrypted session key and the iv.
         AESEncryption aes = new AESEncryption();
-        var encryptedData = aes.Enrypt(Encoding.UTF8.GetBytes(actualRequestData), decryptedSessionKey, ivBytes);
-        var actualRequestDataHash = HashGenerator.ComputeHmacSha256((encryptedData), decryptedSessionKey);
+        var actualEncryptedData = aes.Enrypt(Encoding.UTF8.GetBytes(actualData), requestDecryptedSessionKey, requestIvBytes);
+        var actualDataHash = HashGenerator.ComputeHmacSha256((actualEncryptedData), requestDecryptedSessionKey);
         
-        // Step 6-Compare the actual hash with received hash
-        var isMatch = Compare(hashedDataBytes, actualRequestDataHash);
-
-        if (isMatch)
+        // Step 5-Compare the actual hash with received hash(from request)
+        var isActualDataHashMatch = Compare(requestHashedDataBytes, actualDataHash);
+        
+        // Step 6-Calculate the hash for the encrypted data 
+        var requestEncryptedDataHash = HashGenerator.ComputeHmacSha256((requestEncryptedDataBytes), requestDecryptedSessionKey);
+        var isRequestEncryptedDataHashMatch = Compare(actualDataHash, requestEncryptedDataHash);
+        
+        if (isActualDataHashMatch && isRequestEncryptedDataHashMatch)
         {
             //Step 7 -Decrypt the data using the decrypted session key and the iv. - out of scope                       
             //var decryptedDataBytes = aes.Decrypt(encryptedDataBytes, decryptedSessionKey, ivBytes);
             //var plainData =Encoding.Default.GetString(decryptedDataBytes);
+            isGenuine= true;
         }        
-        return isMatch;
+        return isGenuine;
+    }
+    private bool Compare(byte[] array1, byte[] array2)
+    {
+        var result = array1.Length == array2.Length;
+        for (int i = 0; i < array1.Length && i < array2.Length; ++i)
+        {
+            bool isEqual = (array1[i] == array2[i]);
+            result &= isEqual;
+        }
+        return result;
     }
 }

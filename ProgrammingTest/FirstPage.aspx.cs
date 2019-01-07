@@ -32,9 +32,9 @@ public partial class FirstPage : System.Web.UI.Page
         m_szEighthVariable = PopulateVariable(EighthVariableLabel, ModifiedEighthVariable, rRandom);
 
         //-----------------------------------------------------------------------------------------------------------+
-            // Prep code was used to create the public and the private keys                                          |
-            //var rsa = new RSAEncryption();                                                                         |
-            //rsa.AssignNewKey(Server.MapPath("~/Keys/publickey.xml"), Server.MapPath("~/Keys/privatekey.xml"));     |
+        //Prep code was used to create the public and the private keys                                           |
+              //var rsa = new RSAEncryption();                                                                       |
+              //rsa.AssignNewKey(Server.MapPath("~/Keys/publickey.xml"), Server.MapPath("~/Keys/privatekey.xml"));   |
         //-----------------------------------------------------------------------------------------------------------+
 
 
@@ -52,7 +52,7 @@ public partial class FirstPage : System.Web.UI.Page
         // Step 4 -Hash the encrypted data using the session key
         byte[] hashedData = HashGenerator.ComputeHmacSha256(encryptedData, sessionKey);
         
-        // Step 5 -Encrypt the session Key using the receiver's public key(created and stored safely before and real life scenario will two different servers).
+        // Step 5 -Encrypt the session Key using the receiver's public key(created and stored safely before, in real life scenario will two different servers).
         RSAEncryption rsa = new RSAEncryption();        
         var encryptedSessionKey = rsa.Encrypt(Server.MapPath("~/Keys/publickey.xml"), sessionKey); 
 
