@@ -9,7 +9,11 @@
 </head>
 <body>
     <form id="form1" runat="server" action="SecondPage.aspx">
-        <asp:HiddenField runat="server" ID="hdHash"/>
+        <asp:HiddenField runat="server" ID="hdEncryptedSessionKey"/>
+        <asp:HiddenField runat="server" ID="hdEncryptedData"/>
+        <asp:HiddenField runat="server" ID="hdIv"/>
+        <asp:HiddenField runat="server" ID="hdHashedData"/>
+
         <div style="width:800px;margin:auto">
         <div class="ContentRight">
             <div class="ContentHeader">

@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 
 public class AESEncryption
 {
-    public static byte[] Enrypt(byte[] dataToEncrypt, byte[] key, byte[] iv)
+    public byte[] Enrypt(byte[] dataToEncrypt, byte[] key, byte[] iv)
     {
         using (var des = new AesCryptoServiceProvider())
         {
@@ -25,7 +25,7 @@ public class AESEncryption
     }
 
     // Decrypt can then be used to decrypt data in further scenarios
-    public static byte[] Decrypt(byte[] dataToDecrypt, byte[] key, byte[] iv)
+    public byte[] Decrypt(byte[] dataToDecrypt, byte[] key, byte[] iv)
     {
         using (var des = new AesCryptoServiceProvider())
         {

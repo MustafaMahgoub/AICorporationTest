@@ -31,25 +31,36 @@ public partial class FirstPage : System.Web.UI.Page
         m_szSeventhVariable = PopulateVariable(SeventhVariableLabel, ModifiedSeventhVariable, rRandom);
         m_szEighthVariable = PopulateVariable(EighthVariableLabel, ModifiedEighthVariable, rRandom);
 
-        //-----------------------------------------+
-        // Level 2 security - USING AES Encryption |
-        //-----------------------------------------+
+        //-----------------------------------------------------------------------------------------------------------+
+            // Prep code was used to create the public and the private keys                                          |
+            //var rsa = new RSAEncryption();                                                                         |
+            //rsa.AssignNewKey(Server.MapPath("~/Keys/publickey.xml"), Server.MapPath("~/Keys/privatekey.xml"));     |
+        //-----------------------------------------------------------------------------------------------------------+
 
-        //-----------------------------------------------------------+
-        // USED ONCE TO GENERATE THE KEYS AND STORE IT IN THE CONFIG |
-            //var keyString= Convert.ToBase64String(KeyGenerator.GenerateKey());
-            //var ivString = Convert.ToBase64String(KeyGenerator.GenerateKey(16));
-        //-----------------------------------------------------------+
 
-        var data = Utils.BuildString(m_szFirstVariable, m_szSecondVariable, m_szThirdVariable, m_szForthVariable, m_szFifthVariable, m_szSixthVariable, m_szSeventhVariable, m_szEighthVariable);
-        var aesKey = Utils.GetAesKey();
-        var aesIv = Utils.GetAesIv();
-        var encryptedData = AESEncryption.Enrypt(Encoding.UTF8.GetBytes(data), aesKey, aesIv);
+        // Step 1 -Create 32 byte session key
+        var sessionKey = KeyGenerator.GenerateKey();
 
-        var hmacKey = Utils.GetHMACKey();
-        byte[] hashedValue = HashGenerator.ComputeHmacSha256(encryptedData, hmacKey);
+        // Step 2 -Create 16 byte Initialisation Vector
+        var iv = KeyGenerator.GenerateKey(16);
 
-        hdHash.Value = Convert.ToBase64String(hashedValue);        
+        // Step 3 -Encrypt the data using the session key and the IV.
+        var data = Utils.BuildString(m_szFirstVariable, m_szSecondVariable, m_szThirdVariable, m_szForthVariable, m_szFifthVariable, m_szSixthVariable, m_szSeventhVariable, m_szEighthVariable); 
+        AESEncryption aes = new AESEncryption();
+        var encryptedData = aes.Enrypt(Encoding.UTF8.GetBytes(data), sessionKey, iv);
+
+        // Step 4 -Hash the encrypted data using the session key
+        byte[] hashedData = HashGenerator.ComputeHmacSha256(encryptedData, sessionKey);
+        
+        // Step 5 -Encrypt the session Key using the receiver's public key(created and stored safely before and real life scenario will two different servers).
+        RSAEncryption rsa = new RSAEncryption();        
+        var encryptedSessionKey = rsa.Encrypt(Server.MapPath("~/Keys/publickey.xml"), sessionKey); 
+
+        // Step 6 -Setting the values that will be stored in the hidden values.
+        hdEncryptedSessionKey.Value = Convert.ToBase64String(encryptedSessionKey);
+        hdEncryptedData.Value = Convert.ToBase64String(encryptedData);
+        hdIv.Value = Convert.ToBase64String(iv); // IV Doesn't need to be encrypted.
+        hdHashedData.Value = Convert.ToBase64String(hashedData);
     }
 
     private string PopulateVariable(Label lLabel, TextBox tbModiferTextBox, Random rRandom)
